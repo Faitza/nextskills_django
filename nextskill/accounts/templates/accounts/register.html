@@ -1,0 +1,76 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Inscription{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Crée ton compte</h1>
+    <p class="subtitle">Rejoins NextSkill en tant que…</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <div class="auth-role-tabs">
+        <label class="role-tab-label active" id="tab-etudiant">
+          <input type="radio" name="role" value="etudiant" checked onchange="setRole('etudiant')">
+          Étudiant
+        </label>
+        <label class="role-tab-label" id="tab-formateur">
+          <input type="radio" name="role" value="formateur" onchange="setRole('formateur')">
+          Formateur
+        </label>
+      </div>
+      {{ form.role.errors }}
+
+      <div class="field">
+        <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.email.id_for_label }}">Email</label>
+        {{ form.email }}
+        {{ form.email.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+
+      <div id="extra-etudiant">
+        <div class="field">
+          <label>{{ form.centres_interet.label }}</label>
+          {{ form.centres_interet }}
+        </div>
+      </div>
+
+      <div id="extra-formateur" style="display:none;">
+        <div class="field">
+          <label for="{{ form.specialite.id_for_label }}">{{ form.specialite.label }}</label>
+          {{ form.specialite }}
+          {{ form.specialite.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+          {{ form.bio }}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Créer mon compte</button>
+    </form>
+    <div class="auth-switch">Déjà un compte ? <a href="{% url 'accounts:connexion' %}">Se connecter</a></div>
+  </div>
+</div>
+
+<script>
+function setRole(role){
+  document.getElementById('extra-etudiant').style.display = role === 'etudiant' ? 'block' : 'none';
+  document.getElementById('extra-formateur').style.display = role === 'formateur' ? 'block' : 'none';
+  document.getElementById('tab-etudiant').classList.toggle('active', role === 'etudiant');
+  document.getElementById('tab-formateur').classList.toggle('active', role === 'formateur');
+}
+</script>
+{% endblock %}

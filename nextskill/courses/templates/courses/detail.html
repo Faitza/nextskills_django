@@ -1,0 +1,142 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — {{ cours.titre }}{% endblock %}
+
+{% block content %}
+<section class="section" id="cours-detail">
+  <div class="breadcrumb"><a href="{% url 'courses:catalogue' %}">Catalogue</a> / {{ cours.titre }}</div>
+
+  <div class="course-hero"{% if cours.image_couverture %} style="background-image:linear-gradient(135deg, rgba(21,43,84,.88), rgba(13,29,59,.92)), url('{{ cours.image_couverture.url }}');"{% endif %}>
+    <div>
+      <span class="eyebrow" style="color:var(--accent);">{{ cours.categorie.nom }} · {{ cours.get_niveau_display }}</span>
+      <h1>{{ cours.titre }}</h1>
+      <p class="subtitle">{{ cours.description }}</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">{% if cours.prix == 0 %}Gratuit{% else %}{{ cours.prix }} HTG{% endif %}</div>
+        <div class="lbl">Prix</div>
+      </div>
+      <div class="hero-stat"><div class="num">{{ cours.nombre_modules }}</div><div class="lbl">Modules</div></div>
+      <div class="hero-stat"><div class="num">{{ cours.nombre_inscrits }}</div><div class="lbl">Inscrits</div></div>
+      {% if note_moyenne %}
+        <div class="hero-stat"><div class="num">★ {{ note_moyenne|floatformat:1 }}</div><div class="lbl">Note moyenne</div></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="detail-layout">
+    <div class="card">
+      <h2 style="margin-bottom:18px;">Contenu du cours</h2>
+      <div class="module-rail">
+        {% for module in cours.modules.all %}
+          <div class="module-block">
+            <div class="module-head"><span class="mod-index">{{ forloop.counter0|stringformat:"02d" }}</span>{{ module.titre }}</div>
+            {% for lecon in module.lecons.all %}
+              {% if inscription %}
+                <a class="lesson-row" href="{% url 'courses:lecon' cours.slug lecon.id %}">
+                  <span class="lesson-title">
+                    {% if lecon.id in lecons_terminees %}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--done)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    {% endif %}{{ lecon.titre }}
+                  </span>
+                  <span class="lesson-type">{{ lecon.get_type_contenu_display }}</span>
+                  {% if lecon.duree_minutes %}<span class="lesson-duration">{{ lecon.duree_minutes }} min</span>{% endif %}
+                </a>
+              {% else %}
+                <div class="lesson-row locked">
+                  <span class="lesson-title">{{ lecon.titre }}</span>
+                  <span class="lesson-type">{{ lecon.get_type_contenu_display }}</span>
+                  {% if lecon.duree_minutes %}<span class="lesson-duration">{{ lecon.duree_minutes }} min</span>{% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+            {% if module.quiz %}
+              {% if inscription %}
+                <a class="lesson-row quiz-row" href="{% url 'quizzes:quiz' module.quiz.id %}">
+                  <span class="lesson-title">Quiz — {{ module.quiz.titre }}</span>
+                  <span class="lesson-type">{{ module.quiz.questions.count }} question{{ module.quiz.questions.count|pluralize }}</span>
+                </a>
+              {% else %}
+                <div class="lesson-row quiz-row locked">
+                  <span class="lesson-title">Quiz — {{ module.quiz.titre }}</span>
+                  <span class="lesson-type">{{ module.quiz.questions.count }} question{{ module.quiz.questions.count|pluralize }}</span>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="subtitle">Le contenu de ce cours sera bientôt disponible.</p>
+        {% endfor %}
+      </div>
+
+      <div class="section-title-row" style="margin:26px 0 14px;">
+        <h2 style="margin:0;">Avis des étudiants</h2>
+        {% if inscription %}
+          <a class="btn btn-outline" style="padding:7px 14px;font-size:12.5px;" href="{% url 'courses:laisser_avis' cours.slug %}">
+            {% if mon_avis %}Modifier mon avis{% else %}Laisser un avis{% endif %}
+          </a>
+        {% endif %}
+      </div>
+      {% if avis_liste %}
+        {% for avis in avis_liste %}
+          <div style="border-bottom:1px solid var(--line);padding:10px 0;">
+            <div class="rating-row"><span class="stars">★</span> {{ avis.note }}/5 — <strong>{{ avis.etudiant.username }}</strong></div>
+            {% if avis.commentaire %}<p style="font-size:13px;color:var(--ink-soft);margin:4px 0 0;">{{ avis.commentaire }}</p>{% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="subtitle" style="margin:0;">Aucun avis pour l'instant.</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="card side-card" style="margin-bottom:16px;">
+        <div class="stat-line">
+          <span class="lbl">Prix</span>
+          <span class="val">{% if cours.prix == 0 %}Gratuit{% else %}{{ cours.prix }} HTG{% endif %}</span>
+        </div>
+        {% if inscription %}
+          <div class="stat-line"><span class="lbl">Ta progression</span><span class="val">{{ inscription.progression_pourcentage }}%</span></div>
+          {% if inscription.statut == "termine" %}
+            <a class="btn btn-primary btn-block btn-icon-text" style="margin-top:12px;" href="{% url 'enrollments:apercu_certificat' inscription.id %}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
+              Voir mon certificat
+            </a>
+          {% else %}
+            {% with premiere_lecon=cours.modules.first.lecons.first %}
+              {% if premiere_lecon %}
+                <a class="btn btn-primary btn-block" style="margin-top:12px;" href="{% url 'courses:lecon' cours.slug premiere_lecon.id %}">Continuer le cours</a>
+              {% endif %}
+            {% endwith %}
+          {% endif %}
+        {% elif user.is_authenticated %}
+          {% if user.est_etudiant %}
+            <form method="post" action="{% url 'orders:ajouter_au_panier' cours.slug %}" style="margin-top:12px;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline btn-block">Ajouter au panier</button>
+            </form>
+            <a class="btn btn-primary btn-block" style="margin-top:8px;" href="{% url 'orders:acheter_direct' cours.slug %}">Acheter</a>
+          {% endif %}
+        {% else %}
+          <a class="btn btn-primary btn-block" style="margin-top:12px;" href="{% url 'accounts:connexion' %}?next={{ request.path }}">Se connecter pour acheter</a>
+        {% endif %}
+      </div>
+
+      <div class="card side-card">
+        <h2>Formateur</h2>
+        <div class="instructor">
+          <div class="avatar-lg">{{ cours.formateur.username|slice:":2"|upper }}</div>
+          <div>
+            <div class="instructor-name">{{ cours.formateur.get_full_name|default:cours.formateur.username }}</div>
+            <div class="instructor-role">{{ cours.formateur.specialite|default:"Formateur NextSkill" }}</div>
+          </div>
+        </div>
+        {% if cours.formateur.bio %}
+          <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">{{ cours.formateur.bio }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

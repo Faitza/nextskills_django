@@ -1,0 +1,54 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Catalogue{% endblock %}
+
+{% block content %}
+<section class="section" id="catalogue">
+  <div class="section-head">
+    <span class="eyebrow">Catalogue</span>
+    <h2>{{ cours_liste|length }} cours disponible{{ cours_liste|length|pluralize }}</h2>
+    <p>Parcours les cours publiés et trouve celui qui te correspond.</p>
+  </div>
+
+  <div class="filter-row">
+    <a class="chip{% if not categorie_active %} active{% endif %}" href="{% url 'courses:catalogue' %}">Tous</a>
+    {% for categorie in categories %}
+      <a class="chip{% if categorie_active == categorie.id|stringformat:'s' %} active{% endif %}"
+         href="{% url 'courses:catalogue' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a>
+    {% endfor %}
+  </div>
+
+  {% if cours_liste %}
+    <div class="course-grid">
+      {% for cours in cours_liste %}
+        <a class="course-card-full" href="{% url 'courses:detail' cours.slug %}">
+          <div class="course-cover" {% if cours.image_couverture %}style="background-image:url('{{ cours.image_couverture.url }}');"{% endif %}>
+            {% if not cours.image_couverture %}<span>{{ cours.titre }}</span>{% endif %}
+          </div>
+          <div class="course-body">
+            <div class="course-tags">
+              <span class="tag categorie">{{ cours.categorie.nom }}</span>
+              <span class="tag niveau">{{ cours.get_niveau_display }}</span>
+            </div>
+            <div class="course-title">{{ cours.titre }}</div>
+            <div class="instructor-mini">
+              <div class="mini-avatar">{{ cours.formateur.username|slice:":2"|upper }}</div>
+              <span>{{ cours.formateur.get_full_name|default:cours.formateur.username }}</span>
+            </div>
+            {% if cours.note_moyenne %}
+              <div class="rating-row"><span class="stars">★</span> {{ cours.note_moyenne|floatformat:1 }}</div>
+            {% endif %}
+            <div class="course-card-footer">
+              <div class="course-price{% if cours.prix == 0 %} gratuit{% endif %}">
+                {% if cours.prix == 0 %}Gratuit{% else %}{{ cours.prix }} HTG{% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="subtitle">Aucun cours publié pour le moment{% if categorie_active %} dans cette catégorie{% endif %}.</p>
+  {% endif %}
+</section>
+{% endblock %}

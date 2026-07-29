@@ -1,0 +1,64 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Ajouter une leçon{% endblock %}
+
+{% block content %}
+<section class="section" id="ajouter-lecon" style="max-width:560px;">
+  <div class="breadcrumb"><a href="{% url 'courses:gerer_cours' cours.slug %}">{{ cours.titre }}</a> / {{ module.titre }} / Nouvelle leçon</div>
+  <span class="eyebrow">{{ module.titre }}</span>
+  <h1>Ajouter une leçon</h1>
+  <p class="subtitle">Vidéo (.mp4/.mov/.webm), PDF ou texte — le contenu apparaîtra directement dans le lecteur de leçon.</p>
+
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="field">
+        <label for="{{ form.titre.id_for_label }}">Titre de la leçon</label>
+        {{ form.titre }}
+        {{ form.titre.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.type_contenu.id_for_label }}">Type de contenu</label>
+        {{ form.type_contenu }}
+        {{ form.type_contenu.errors }}
+      </div>
+
+      <div id="champ-fichier" class="field">
+        <label for="{{ form.fichier.id_for_label }}">Fichier (vidéo ou PDF)</label>
+        {{ form.fichier }}
+        {{ form.fichier.errors }}
+      </div>
+
+      <div id="champ-texte" class="field">
+        <label for="{{ form.contenu_texte.id_for_label }}">Contenu texte</label>
+        {{ form.contenu_texte }}
+        {{ form.contenu_texte.errors }}
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="{{ form.duree_minutes.id_for_label }}">Durée (minutes, optionnel)</label>
+          {{ form.duree_minutes }}
+        </div>
+        <div class="field">
+          <label for="{{ form.ordre.id_for_label }}">Ordre</label>
+          {{ form.ordre }}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Publier la leçon</button>
+    </form>
+  </div>
+</section>
+
+<script>
+function basculerChampsLecon(){
+  var type = document.getElementById('{{ form.type_contenu.id_for_label }}').value;
+  document.getElementById('champ-fichier').style.display = type === 'texte' ? 'none' : 'block';
+  document.getElementById('champ-texte').style.display = type === 'texte' ? 'block' : 'none';
+}
+document.getElementById('{{ form.type_contenu.id_for_label }}').addEventListener('change', basculerChampsLecon);
+basculerChampsLecon();
+</script>
+{% endblock %}

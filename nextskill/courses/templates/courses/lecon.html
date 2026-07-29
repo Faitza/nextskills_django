@@ -1,0 +1,43 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — {{ lecon.titre }}{% endblock %}
+
+{% block content %}
+<section class="section" id="lecon">
+  <div class="breadcrumb"><a href="{% url 'courses:detail' cours.slug %}">{{ cours.titre }}</a> / {{ lecon.titre }}</div>
+
+  <div class="lesson-layout">
+    <div>
+      {% if lecon.type_contenu == "video" and lecon.fichier %}
+        <video class="player-frame" controls style="width:100%;">
+          <source src="{{ lecon.fichier.url }}">
+        </video>
+      {% elif lecon.type_contenu == "pdf" and lecon.fichier %}
+        <iframe src="{{ lecon.fichier.url }}" class="player-frame pdf-mode" style="width:100%;border:none;"></iframe>
+      {% else %}
+        <div class="card"><p style="margin:0;">{{ lecon.contenu_texte|linebreaks }}</p></div>
+      {% endif %}
+
+      <div class="lesson-info">
+        <span class="eyebrow">{{ lecon.module.titre }}</span>
+        <h1>{{ lecon.titre }}</h1>
+      </div>
+
+      <div class="lesson-nav">
+        <a class="btn btn-outline" href="{% url 'courses:detail' cours.slug %}">← Retour au cours</a>
+        {% if progression.statut == "termine" %}
+          <button class="btn btn-primary" disabled style="display:inline-flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Leçon terminée
+          </button>
+        {% else %}
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Marquer comme terminée</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

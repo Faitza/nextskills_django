@@ -1,0 +1,64 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}NextSkill{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'pages/css/public.css' %}">
+</head>
+<body>
+
+<header class="topbar-public">
+  <a href="{% url 'pages:accueil' %}" class="logo">
+    <span class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
+    </span>
+    NextSkill
+  </a>
+  <nav class="public-nav">
+    <a href="{% url 'pages:accueil' %}" class="{% if request.resolver_match.url_name == 'accueil' %}active{% endif %}">Accueil</a>
+    <a href="{% url 'courses:catalogue' %}" class="{% if request.resolver_match.app_name == 'courses' %}active{% endif %}">Catalogue</a>
+    <a href="{% url 'pages:services' %}" class="{% if request.resolver_match.url_name == 'services' %}active{% endif %}">Services</a>
+    <a href="{% url 'pages:apropos' %}" class="{% if request.resolver_match.url_name == 'apropos' %}active{% endif %}">À propos</a>
+    <a href="{% url 'pages:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+  </nav>
+  <div class="public-cta">
+    {% if user.is_authenticated %}
+      {% if user.est_etudiant %}
+        <a class="btn btn-ghost" href="{% url 'enrollments:mes_cours' %}">Mon apprentissage</a>
+        <a class="btn btn-ghost btn-icon-text" href="{% url 'orders:panier' %}" title="Mon panier">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          Panier
+        </a>
+      {% endif %}
+      {% if user.est_formateur %}
+        <a class="btn btn-ghost" href="{% url 'courses:tableau_de_bord_formateur' %}">Tableau de bord</a>
+      {% endif %}
+      {% if user.is_staff %}
+        <a class="btn btn-ghost" href="{% url 'courses:tableau_de_bord_admin' %}">Administration</a>
+      {% endif %}
+      <span class="user-badge">{{ user.username }} · {% if user.is_staff %}Administrateur{% else %}{{ user.get_role_display }}{% endif %}</span>
+      <form method="post" action="{% url 'accounts:deconnexion' %}" style="display:inline;" onsubmit="return confirm('Te déconnecter de NextSkill ?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost">Se déconnecter</button>
+      </form>
+    {% else %}
+      <a class="btn btn-ghost" href="{% url 'accounts:connexion' %}">Se connecter</a>
+      <a class="btn btn-primary" href="{% url 'accounts:inscription' %}">S'inscrire</a>
+    {% endif %}
+  </div>
+</header>
+
+{% if messages %}
+<div style="max-width:1180px;margin:20px auto 0;padding:0 40px;">
+  {% for message in messages %}
+    <div class="alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer class="footer-public">© 2026 NextSkill — Projet académique ITAC, Les Cayes, Haïti</footer>
+</body>
+</html>

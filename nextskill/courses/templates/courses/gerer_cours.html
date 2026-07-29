@@ -1,0 +1,59 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Gérer {{ cours.titre }}{% endblock %}
+
+{% block content %}
+<section class="section" id="gerer-cours">
+  <div class="breadcrumb"><a href="{% url 'courses:tableau_de_bord_formateur' %}">Tableau de bord</a> / {{ cours.titre }}</div>
+
+  <div class="section-title-row">
+    <div>
+      <span class="eyebrow">Gestion du cours</span>
+      <h1 style="margin:0;">{{ cours.titre }}</h1>
+    </div>
+    <a class="btn btn-primary" href="{% url 'courses:ajouter_module' cours.slug %}">+ Ajouter un module</a>
+  </div>
+
+  {% if modules %}
+    {% for module in modules %}
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title-row">
+          <h2 style="margin:0;font-size:15px;">{{ module.titre }}</h2>
+          <div style="display:flex;gap:8px;">
+            <a class="btn btn-outline" style="padding:7px 14px;font-size:12.5px;" href="{% url 'courses:ajouter_lecon' cours.slug module.id %}">+ Ajouter une leçon</a>
+            <form method="post" action="{% url 'courses:supprimer_module' cours.slug module.id %}" onsubmit="return confirm('Supprimer ce module et toutes ses leçons ?');">
+              {% csrf_token %}
+              <button type="submit" class="icon-btn reject" title="Supprimer le module">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {% if module.lecons.all %}
+          {% for lecon in module.lecons.all %}
+            <div class="lesson-row">
+              <span class="lesson-title">{{ lecon.titre }}</span>
+              <span class="lesson-type">{{ lecon.get_type_contenu_display }}</span>
+              {% if lecon.duree_minutes %}<span class="lesson-duration">{{ lecon.duree_minutes }} min</span>{% endif %}
+              <form method="post" action="{% url 'courses:supprimer_lecon' cours.slug lecon.id %}" onsubmit="return confirm('Supprimer cette leçon ?');">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn reject" title="Supprimer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="subtitle" style="margin:10px 0 0;">Aucune leçon dans ce module pour l'instant.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="text-align:center;padding:44px 20px;">
+      <p style="color:var(--ink-soft);margin-bottom:16px;">Ce cours n'a encore aucun module. Ajoute-en un pour commencer à publier des leçons (vidéo, PDF ou texte).</p>
+      <a class="btn btn-primary" href="{% url 'courses:ajouter_module' cours.slug %}">+ Ajouter un module</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

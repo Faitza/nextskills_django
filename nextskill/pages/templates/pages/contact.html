@@ -1,0 +1,52 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Contact{% endblock %}
+
+{% block content %}
+<section class="section" id="contact">
+  <div class="section-head">
+    <span class="eyebrow">Contact</span>
+    <h2>Une question ? Écris-nous</h2>
+    <p>Notre équipe te répond sous 48h.</p>
+  </div>
+  <div class="contact-layout">
+    <div>
+      <div class="contact-info-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg>
+        <div><div class="lbl">Email</div><div class="val">contact@nextskill.ht</div></div>
+      </div>
+      <div class="contact-info-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.81.35 1.6.68 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.25a2 2 0 0 1 2.11-.45c.74.33 1.53.56 2.34.68A2 2 0 0 1 22 16.92z"/></svg>
+        <div><div class="lbl">Téléphone</div><div class="val">+509 3xxx-xxxx</div></div>
+      </div>
+      <div class="contact-info-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div><div class="lbl">Adresse</div><div class="val">Les Cayes, Haïti</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <form method="post">
+        {% csrf_token %}
+        <div class="field-row">
+          <div class="field">
+            <label for="{{ form.nom.id_for_label }}">Nom</label>
+            {{ form.nom }}
+            {{ form.nom.errors }}
+          </div>
+          <div class="field">
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+          </div>
+        </div>
+        <div class="field">
+          <label for="{{ form.message.id_for_label }}">Message</label>
+          {{ form.message }}
+          {{ form.message.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Envoyer le message</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

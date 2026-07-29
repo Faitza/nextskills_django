@@ -1,0 +1,22 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Résultat du quiz{% endblock %}
+
+{% block content %}
+<section class="section" id="quiz-resultat">
+  <div class="breadcrumb"><a href="{% url 'courses:detail' cours.slug %}">{{ cours.titre }}</a> / {{ quiz.titre }}</div>
+
+  <div class="quiz-result show {% if tentative.reussi %}pass{% else %}fail{% endif %}">
+    <div class="score">{{ tentative.score }}%</div>
+    <div class="verdict">{% if tentative.reussi %}Quiz réussi{% else %}Quiz non validé{% endif %}</div>
+    <div class="sub">Note de passage : {{ quiz.note_passage }}%</div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;display:flex;gap:10px;justify-content:center;">
+    <a class="btn btn-primary" href="{% url 'courses:detail' cours.slug %}">Retour au cours</a>
+    {% if not tentative.reussi %}
+      <a class="btn btn-outline" href="{% url 'quizzes:quiz' quiz.id %}">Retenter le quiz</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

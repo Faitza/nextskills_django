@@ -1,0 +1,31 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Ton avis sur {{ cours.titre }}{% endblock %}
+
+{% block content %}
+<section class="section" id="laisser-avis" style="max-width:560px;">
+  <div class="breadcrumb"><a href="{% url 'courses:detail' cours.slug %}">{{ cours.titre }}</a> / Avis</div>
+  <span class="eyebrow">Ton avis</span>
+  <h1>{% if avis_existant %}Modifier ton avis{% else %}Laisser un avis{% endif %}</h1>
+  <p class="subtitle">Ta note aide les autres étudiants à choisir ce cours.</p>
+
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="field">
+        <label>Note</label>
+        {{ form.note }}
+        {{ form.note.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.commentaire.id_for_label }}">Commentaire (optionnel)</label>
+        {{ form.commentaire }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">
+        {% if avis_existant %}Mettre à jour mon avis{% else %}Publier mon avis{% endif %}
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

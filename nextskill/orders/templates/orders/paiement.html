@@ -1,0 +1,48 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Paiement{% endblock %}
+
+{% block content %}
+<section class="section" id="paiement">
+  <div class="breadcrumb">
+    {% if cours_unique %}<a href="{% url 'courses:detail' cours_unique.slug %}">{{ cours_unique.titre }}</a>{% else %}<a href="{% url 'orders:panier' %}">Panier</a>{% endif %}
+    / Paiement
+  </div>
+  <span class="eyebrow">{% if cours_unique %}Inscription au cours{% else %}Panier{% endif %}</span>
+  <h1>Finaliser {% if cours_unique %}ton inscription{% else %}ton achat{% endif %}</h1>
+  <p class="subtitle">Paiement fictif — démonstration académique, aucune transaction réelle n'est effectuée.</p>
+
+  <div class="detail-layout">
+    <div class="card">
+      <h2 style="margin-bottom:16px;">Mode de paiement</h2>
+      <form method="post">
+        {% csrf_token %}
+        <div class="field">
+          {% for radio in form.methode %}
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-weight:500;">
+              {{ radio.tag }} {{ radio.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Payer maintenant — {{ montant }} HTG</button>
+      </form>
+      <p style="font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:5px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Paiement fictif à des fins de démonstration académique.
+      </p>
+    </div>
+
+    <div class="card side-card">
+      <h2>Récapitulatif</h2>
+      {% if cours_unique %}
+        <div class="stat-line"><span class="lbl">{{ cours_unique.titre }}</span><span class="val">{% if cours_unique.prix == 0 %}Gratuit{% else %}{{ cours_unique.prix }} HTG{% endif %}</span></div>
+      {% else %}
+        {% for ligne in panier.lignes.all %}
+          <div class="stat-line"><span class="lbl">{{ ligne.cours.titre }}</span><span class="val">{% if ligne.cours.prix == 0 %}Gratuit{% else %}{{ ligne.cours.prix }} HTG{% endif %}</span></div>
+        {% endfor %}
+      {% endif %}
+      <div class="stat-line"><span class="lbl">Total</span><span class="val">{{ montant }} HTG</span></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

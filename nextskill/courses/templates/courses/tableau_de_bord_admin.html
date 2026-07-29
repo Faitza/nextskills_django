@@ -1,0 +1,117 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Administration{% endblock %}
+
+{% block content %}
+<section class="section" id="dashboard-admin">
+  <span class="eyebrow">Espace Administrateur</span>
+  <h1>Tableau de bord</h1>
+  <p class="subtitle">Vue d'ensemble de la plateforme et validation des nouveaux cours.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">{{ stats.total_utilisateurs }}</div><div class="lbl">Utilisateurs</div></div>
+    <div class="stat-card"><div class="num">{{ stats.cours_publies }}</div><div class="lbl">Cours publiés</div></div>
+    <div class="stat-card"><div class="num">{{ stats.cours_en_attente }}</div><div class="lbl">En attente de validation</div></div>
+    <div class="stat-card"><div class="num">{{ stats.formateurs_actifs }}</div><div class="lbl">Formateurs actifs</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <h2 style="margin-bottom:14px;">Cours en attente de validation</h2>
+    {% if cours_en_attente %}
+      <table class="table-simple">
+        <thead><tr><th>Cours</th><th>Formateur</th><th>Catégorie</th><th>Soumis le</th><th></th></tr></thead>
+        <tbody>
+          {% for cours in cours_en_attente %}
+          <tr>
+            <td><strong>{{ cours.titre }}</strong></td>
+            <td>{{ cours.formateur.get_full_name|default:cours.formateur.username }}</td>
+            <td>{{ cours.categorie.nom }}</td>
+            <td>{{ cours.date_creation|date:"d/m/Y" }}</td>
+            <td class="row-actions">
+              <form method="post" action="{% url 'courses:valider_cours' cours.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn approve" title="Approuver">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+              </form>
+              <form method="post" action="{% url 'courses:rejeter_cours' cours.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn reject" title="Rejeter">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="subtitle" style="margin:0;">Aucun cours en attente de validation.</p>
+    {% endif %}
+  </div>
+
+  <div class="admin-users-grid">
+    <div class="card">
+      <div class="section-title-row">
+        <h2 style="margin:0;">Formateurs récents</h2>
+        <span class="status-pill publie">{{ stats.formateurs_actifs }} au total</span>
+      </div>
+      {% if formateurs_recents %}
+        <table class="table-simple">
+          <thead><tr><th>Nom</th><th>Spécialité</th><th>Cours créés</th><th>Inscrit le</th></tr></thead>
+          <tbody>
+            {% for f in formateurs_recents %}
+            <tr>
+              <td>
+                <div class="user-row">
+                  <span class="user-avatar">{{ f.username|slice:":2"|upper }}</span>
+                  {{ f.get_full_name|default:f.username }}
+                </div>
+              </td>
+              <td>{{ f.specialite|default:"—" }}</td>
+              <td>{{ f.nb_cours_crees }}</td>
+              <td>{{ f.date_inscription|date:"d/m/Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="subtitle" style="margin:0;">Aucun formateur pour le moment.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="section-title-row">
+        <h2 style="margin:0;">Étudiants récents</h2>
+      </div>
+      {% if etudiants_recents %}
+        <table class="table-simple">
+          <thead><tr><th>Nom</th><th>Activité</th><th>Inscrit le</th></tr></thead>
+          <tbody>
+            {% for e in etudiants_recents %}
+            <tr>
+              <td>
+                <div class="user-row">
+                  <span class="user-avatar">{{ e.username|slice:":2"|upper }}</span>
+                  {{ e.get_full_name|default:e.username }}
+                </div>
+              </td>
+              <td>
+                {% if e.nb_cours_suivis > 0 %}
+                  <span class="status-pill publie">Suit {{ e.nb_cours_suivis }} cours</span>
+                {% else %}
+                  <span class="status-pill brouillon">Compte créé, aucun cours</span>
+                {% endif %}
+              </td>
+              <td>{{ e.date_inscription|date:"d/m/Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="subtitle" style="margin:0;">Aucun étudiant pour le moment.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

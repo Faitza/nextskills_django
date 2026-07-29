@@ -1,0 +1,29 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Ajouter un module{% endblock %}
+
+{% block content %}
+<section class="section" id="ajouter-module" style="max-width:560px;">
+  <div class="breadcrumb"><a href="{% url 'courses:gerer_cours' cours.slug %}">{{ cours.titre }}</a> / Nouveau module</div>
+  <span class="eyebrow">Gestion du cours</span>
+  <h1>Ajouter un module</h1>
+
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="field">
+        <label for="{{ form.titre.id_for_label }}">Titre du module</label>
+        {{ form.titre }}
+        {{ form.titre.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.ordre.id_for_label }}">Ordre</label>
+        {{ form.ordre }}
+        {{ form.ordre.errors }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Ajouter le module</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

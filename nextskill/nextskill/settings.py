@@ -10,63 +10,77 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
+from pathlib import Path  # manipulation de chemins indépendante de l'OS (Windows/Linux/Mac)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent  # racine du projet, deux niveaux au-dessus de ce fichier
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b7^8#g6kld7=a=zk7_!!-m59_4yhqxc-r5oz=#h59e!c@f9=-q'
+SECRET_KEY = 'django-insecure-b7^8#g6kld7=a=zk7_!!-m59_4yhqxc-r5oz=#h59e!c@f9=-q'  # clé de signature Django (sessions, tokens CSRF...)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # affiche les pages d'erreur détaillées ; à mettre à False en production
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []  # vide car DEBUG=True autorise localhost par défaut ; à remplir avant un déploiement
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.admin',  # interface d'administration native Django (/admin/)
+    'django.contrib.auth',  # système d'authentification (utilisateurs, permissions, sessions)
+    'django.contrib.contenttypes',  # requis par auth/admin pour référencer génériquement les modèles
+    'django.contrib.sessions',  # gestion des sessions utilisateur (cookies)
+    'django.contrib.messages',  # messages flash (succès/erreur/info) affichés après une action
+    'django.contrib.staticfiles',  # gestion des fichiers statiques (CSS/JS/images) en développement
+    'accounts',  # utilisateur personnalisé, connexion/inscription
+    'courses',  # catalogue, cours, modules, leçons, avis
+    'enrollments',  # inscriptions et suivi de progression
+    'quizzes',  # quiz et correction automatique
+    'orders',  # panier et paiement fictif
+    'pages',  # pages publiques (accueil, services, à propos, contact)
 ]
+
+# Modèle utilisateur personnalisé (accounts.Utilisateur) : doit être défini
+# avant la première migration, cf. accounts/models.py.
+AUTH_USER_MODEL = 'accounts.Utilisateur'
+
+LOGIN_URL = 'accounts:connexion'  # page vers laquelle Django redirige un utilisateur anonyme bloqué par @login_required
+LOGIN_REDIRECT_URL = 'pages:accueil'  # page par défaut après une connexion réussie (non utilisée directement, nos vues gèrent leur propre redirection)
+LOGOUT_REDIRECT_URL = 'pages:accueil'  # page par défaut après une déconnexion
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',  # en-têtes de sécurité HTTP de base
+    'django.contrib.sessions.middleware.SessionMiddleware',  # active request.session
+    'django.middleware.common.CommonMiddleware',  # traitements HTTP standards (ex: redirection avec/sans slash final)
+    'django.middleware.csrf.CsrfViewMiddleware',  # protection contre les attaques CSRF sur les formulaires POST
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # active request.user
+    'django.contrib.messages.middleware.MessageMiddleware',  # active le système de messages flash
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # empêche l'affichage du site dans une iframe externe
 ]
 
-ROOT_URLCONF = 'nextskill.urls'
+ROOT_URLCONF = 'nextskill.urls'  # fichier urls.py racine du projet
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # moteur de templates utilisé (langage {% %}/{{ }})
+        'DIRS': [],  # dossiers de templates globaux (vide : chaque app fournit les siens via APP_DIRS)
+        'APP_DIRS': True,  # cherche automatiquement un dossier templates/ dans chaque app installée
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',  # rend `request` disponible dans tous les templates
+                'django.contrib.auth.context_processors.auth',  # rend `user` disponible dans tous les templates
+                'django.contrib.messages.context_processors.messages',  # rend `messages` disponible dans tous les templates
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'nextskill.wsgi.application'
+WSGI_APPLICATION = 'nextskill.wsgi.application'  # point d'entrée utilisé par les serveurs WSGI (production)
 
 
 # Database
@@ -74,8 +88,8 @@ WSGI_APPLICATION = 'nextskill.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # base de fichier unique, adaptée au développement/démo académique
+        'NAME': BASE_DIR / 'db.sqlite3',  # emplacement du fichier de base de données
     }
 }
 
@@ -85,16 +99,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # rejette un mot de passe trop proche du username/email
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # impose une longueur minimale (8 caractères par défaut)
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # rejette les mots de passe trop courants (ex: "password123")
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # rejette un mot de passe entièrement numérique
     },
 ]
 
@@ -102,16 +116,26 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # langue par défaut du framework (n'affecte pas le contenu, écrit en français dans les templates)
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC'  # fuseau horaire de stockage des dates en base
 
-USE_I18N = True
+USE_I18N = True  # active le système de traduction de Django
 
-USE_TZ = True
+USE_TZ = True  # stocke les dates avec fuseau horaire (recommandé, évite les ambiguïtés)
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/'  # préfixe d'URL pour les fichiers CSS/JS/images statiques (public.css, etc.)
+
+# Fichiers médias (photos de couverture des cours, avatars, etc.)
+MEDIA_URL = 'media/'  # préfixe d'URL pour les fichiers uploadés par les utilisateurs (formateurs)
+MEDIA_ROOT = BASE_DIR / 'media'  # dossier disque où sont réellement stockés ces fichiers
+
+# Django rejette par défaut toute requête de plus de 2.5 Mo (DATA_UPLOAD_MAX_MEMORY_SIZE).
+# Une vidéo courte peut passer sous cette limite, mais un PDF de plusieurs pages la dépasse
+# facilement — c'est ce qui causait l'erreur à l'ajout d'un PDF. On relève la limite à 50 Mo.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 Mo
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 Mo

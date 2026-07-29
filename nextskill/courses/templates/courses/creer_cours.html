@@ -1,0 +1,55 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Créer un cours{% endblock %}
+
+{% block content %}
+<section class="section" id="creer-cours" style="max-width:640px;">
+  <span class="eyebrow">Espace Formateur</span>
+  <h1>Créer un cours</h1>
+  <p class="subtitle">Ton cours sera soumis à validation par l'administrateur avant publication.</p>
+
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="field">
+        <label for="{{ form.titre.id_for_label }}">Titre</label>
+        {{ form.titre }}
+        {{ form.titre.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="{{ form.categorie.id_for_label }}">Catégorie</label>
+          {{ form.categorie }}
+          {{ form.categorie.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.niveau.id_for_label }}">Niveau</label>
+          {{ form.niveau }}
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="{{ form.langue.id_for_label }}">Langue</label>
+          {{ form.langue }}
+        </div>
+        <div class="field">
+          <label for="{{ form.prix.id_for_label }}">Prix (HTG, 0 = gratuit)</label>
+          {{ form.prix }}
+          {{ form.prix.errors }}
+        </div>
+      </div>
+      <div class="field">
+        <label for="{{ form.image_couverture.id_for_label }}">Image de couverture</label>
+        {{ form.image_couverture }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Soumettre pour validation</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

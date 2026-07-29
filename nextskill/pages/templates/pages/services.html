@@ -1,0 +1,64 @@
+{% extends "pages/base.html" %}
+{% load static %}
+
+{% block title %}NextSkill — Services{% endblock %}
+
+{% block content %}
+<section class="section" id="services">
+  <div class="section-head">
+    <span class="eyebrow">Services</span>
+    <h2>Ce que NextSkill t'offre</h2>
+    <p>Tout ce dont tu as besoin pour apprendre, enseigner et suivre ta progression.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-photo">
+        <img src="{% static 'pages/img/service-cours.jpg' %}" alt="Étudiante qui suit un cours sur son ordinateur portable">
+      </div>
+      <div class="service-card-body">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <h3>Cours structurés</h3>
+        <p>Modules et leçons organisés en vidéos, PDF et textes, à ton rythme.</p>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-photo">
+        <img src="{% static 'pages/img/service-progression.jpg' %}" alt="Tableau de bord affichant des statistiques de progression">
+      </div>
+      <div class="service-card-body">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        </div>
+        <h3>Suivi de progression</h3>
+        <p>Visualise ton avancement leçon par leçon, module par module.</p>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-photo">
+        <img src="{% static 'pages/img/service-quiz.jpg' %}" alt="Feuille de réponses à choix multiples en cours de remplissage">
+      </div>
+      <div class="service-card-body">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3>Quiz automatiques</h3>
+        <p>Évaluations à choix multiples, corrigées instantanément.</p>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-photo">
+        <img src="{% static 'pages/img/service-formateur.jpg' %}" alt="Formateur donnant un cours devant sa classe">
+      </div>
+      <div class="service-card-body">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
+        </div>
+        <h3>Espace formateur</h3>
+        <p>Crée et gère tes cours, suis tes inscrits et tes statistiques.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

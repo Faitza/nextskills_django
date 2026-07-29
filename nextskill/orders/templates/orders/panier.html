@@ -1,0 +1,43 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Mon panier{% endblock %}
+
+{% block content %}
+<section class="section" id="panier">
+  <span class="eyebrow">Panier</span>
+  <h1>Ton panier</h1>
+
+  {% if panier.lignes.all %}
+    <div class="card" style="margin-bottom:20px;">
+      <table class="table-simple">
+        <thead><tr><th>Cours</th><th>Prix</th><th></th></tr></thead>
+        <tbody>
+          {% for ligne in panier.lignes.all %}
+          <tr>
+            <td><strong>{{ ligne.cours.titre }}</strong></td>
+            <td>{% if ligne.cours.prix == 0 %}Gratuit{% else %}{{ ligne.cours.prix }} HTG{% endif %}</td>
+            <td class="row-actions">
+              <form method="post" action="{% url 'orders:retirer_du_panier' ligne.id %}">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn reject" title="Retirer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card side-card" style="max-width:340px;margin-left:auto;">
+      <div class="stat-line"><span class="lbl">Sous-total</span><span class="val">{{ panier.montant_total }} HTG</span></div>
+      <a class="btn btn-primary btn-block" style="margin-top:14px;" href="{% url 'orders:paiement_panier' %}">Passer au paiement</a>
+    </div>
+  {% else %}
+    <div class="card" style="text-align:center;padding:44px 20px;">
+      <p style="color:var(--ink-soft);margin-bottom:16px;">Tu n'as encore rien ajouté à ton panier.</p>
+      <a class="btn btn-primary" href="{% url 'courses:catalogue' %}">Parcourir le catalogue</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

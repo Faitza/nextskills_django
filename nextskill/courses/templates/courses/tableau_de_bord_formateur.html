@@ -1,0 +1,42 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — Espace Formateur{% endblock %}
+
+{% block content %}
+<section class="section" id="dashboard-formateur">
+  <span class="eyebrow">Espace Formateur</span>
+  <h1>Bonjour {{ user.get_full_name|default:user.username }}</h1>
+  <p class="subtitle">Voici un aperçu de tes cours.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">{{ total_cours }}</div><div class="lbl">Cours créés</div></div>
+    <div class="stat-card"><div class="num">{{ total_inscrits }}</div><div class="lbl">Étudiants inscrits</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title-row">
+      <h2 style="margin:0;">Mes cours</h2>
+      <a class="btn btn-primary" href="{% url 'courses:creer_cours' %}">+ Créer un cours</a>
+    </div>
+    {% if cours_liste %}
+      <table class="table-simple">
+        <thead><tr><th>Cours</th><th>Statut</th><th>Inscrits</th><th>Progression moy.</th><th>Note</th><th></th></tr></thead>
+        <tbody>
+          {% for item in cours_liste %}
+          <tr>
+            <td><strong>{{ item.cours.titre }}</strong></td>
+            <td><span class="status-pill {{ item.cours.statut }}">{{ item.cours.get_statut_display }}</span></td>
+            <td>{{ item.nb_inscrits }}</td>
+            <td>{{ item.progression_moyenne|floatformat:0 }}%</td>
+            <td>{% if item.note_moyenne %}★ {{ item.note_moyenne|floatformat:1 }}{% else %}—{% endif %}</td>
+            <td class="row-actions"><a class="btn btn-outline" style="padding:6px 12px;font-size:12px;" href="{% url 'courses:gerer_cours' item.cours.slug %}">Gérer le contenu</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="subtitle" style="margin:14px 0 0;">Tu n'as encore créé aucun cours.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

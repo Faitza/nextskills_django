@@ -1,0 +1,29 @@
+{% extends "pages/base.html" %}
+
+{% block title %}NextSkill — {{ quiz.titre }}{% endblock %}
+
+{% block content %}
+<section class="section" id="quiz">
+  <div class="breadcrumb"><a href="{% url 'courses:detail' cours.slug %}">{{ cours.titre }}</a> / {{ quiz.titre }}</div>
+
+  <span class="eyebrow">{{ quiz.module.titre }} · Évaluation</span>
+  <h1>{{ quiz.titre }}</h1>
+  <p class="subtitle">{{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }} · note de passage : {{ quiz.note_passage }}%</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {% for question in quiz.questions.all %}
+      <div class="card question-card">
+        <div class="question-text">{{ forloop.counter }}. {{ question.enonce }}</div>
+        {% for option in question.options.all %}
+          <label class="option">
+            <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+            {{ option.texte }}
+          </label>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Valider mes réponses</button>
+  </form>
+</section>
+{% endblock %}
